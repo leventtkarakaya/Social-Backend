@@ -9,6 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const protect = async (req, res, next) => {
   try {
     const token = req.headers.authorization;
+    console.log("🚀 ~ protect ~ token:", token);
     if (!token) {
       return res
         .status(401)

@@ -38,10 +38,24 @@ const UserSchema = new mongoose.Schema(
         message: "Parolalar eşleşmiyor",
       },
     },
-    friends: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-    },
+    followers: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    following: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    publications: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "ProfilePosts",
+      },
+    ],
     otp: {
       type: Number,
       required: true,
@@ -77,4 +91,4 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("User", UserSchema, "user");

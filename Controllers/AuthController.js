@@ -72,6 +72,8 @@ const register = async (req, res) => {
       occupation,
       location,
       bio,
+      viewedProfile: Math.floor(Math.random() * 100),
+      impressions: Math.floor(Math.random() * 100),
       otp: otp,
     });
 

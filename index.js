@@ -4,18 +4,23 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const DataBase = require("./Config/DataBase");
+const rateLimit = require("./Utils/RateLimit");
 const path = require("path");
-dotenv.config();
+
+dotenv.config(path.join(__dirname, "../.env"));
 
 const app = express();
+// Middlewares
 app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
   })
 );
+
 app.use(express.json({ extends: true, limit: "30mb" }));
 app.use(express.urlencoded({ extended: true, limit: "30mb" }));
+app.use(rateLimit);
 app.use(helmet());
 app.use(
   helmet.crossOriginResourcePolicy({
