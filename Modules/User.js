@@ -4,7 +4,6 @@ const AutoID = mongoose.Types.ObjectId;
 const UserSchema = new mongoose.Schema(
   {
     id: AutoID,
-
     firstName: {
       type: String,
       required: true,
@@ -12,6 +11,11 @@ const UserSchema = new mongoose.Schema(
     lastName: {
       type: String,
       required: true,
+    },
+    userName: {
+      type: String,
+      required: true,
+      unique: true,
     },
     email: {
       type: String,

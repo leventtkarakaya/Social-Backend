@@ -18,6 +18,10 @@ app.use(
   })
 );
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname + "/Views/index.html"));
+});
+
 app.use(express.json({ extends: true, limit: "30mb" }));
 app.use(express.urlencoded({ extended: true, limit: "30mb" }));
 app.use(rateLimit);
@@ -31,15 +35,16 @@ app.use(morgan("common"));
 
 // Routes
 const AuthRouter = require("./Router/AuthRouter");
-
+const UserRouter = require("./Router/UserRouter");
 app.use("/api/auth", AuthRouter);
+app.use("/api/user", UserRouter);
 
 // DataBase Connection
 DataBase();
 
 // Server Setup
-const PORT = process.env.PORT || 5000;
+const PORT = "http://localhost:9080" || process.env.PORT;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(9080, () => {
+  console.log(`Server is running on port ${"http://localhost:9080"}`);
 });

@@ -11,6 +11,7 @@ const register = async (req, res) => {
     const {
       firstName,
       lastName,
+      userName,
       email,
       password,
       passwordConfrim,
@@ -21,21 +22,28 @@ const register = async (req, res) => {
     } = req.body;
 
     const userExitEmail = await User.findOne({ email });
-
-    // EMAIL VALIDATION
+    const userUserName = await User.findOne({ userName });
+    // ? EMAIL VALIDATION
     if (userExitEmail) {
       return res
         .status(400)
         .json({ message: "Bu email adresi kullanılmaktadır", success: false });
     }
-    // PASSWORD VALIDATION
+    // ? USERNAME VALIDATION
+    if (userUserName) {
+      return res.status(400).json({
+        message: "Bu kullanıcı adı kullanılmaktadır",
+        success: false,
+      });
+    }
+    // ? PASSWORD VALIDATION
     if (password !== passwordConfrim) {
       return res
         .status(400)
         .json({ message: "Parolalar eşleşmiyor", success: false });
     }
 
-    // HASHING
+    // ? HASHING
     const salt = await bcrypt.genSalt(10);
 
     if (!salt) {
@@ -65,6 +73,7 @@ const register = async (req, res) => {
     const newUser = await User({
       firstName,
       lastName,
+      userName,
       email,
       password: hashedPassword,
       passwordConfrim: hashedPassword,

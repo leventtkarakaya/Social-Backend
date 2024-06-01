@@ -2,7 +2,7 @@ const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
   windowMS: 15 * 60 * 1000, // 15 minutes
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  standardHeaders: true,
   limit: async (req, res) => {
     if (await req.user) {
       return 1000;
@@ -10,9 +10,9 @@ const limiter = rateLimit({
       return 10;
     }
   },
-  headers: true, // Return rate limit info in the `RateLimit-*` headers
+  headers: true,
   handler: (req, res) => {
-    res.status(429).json({ message: "Too many requests" });
+    res.status(429).json({ message: "Çok fazla istek yapıldı" });
   },
 });
 

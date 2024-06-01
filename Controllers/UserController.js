@@ -1,5 +1,5 @@
 const User = require("../Modules/User.js");
-const Dtos = require("../Utils/Dtos.js");
+const Dtos = require("../Utils/UserDto.js");
 const bcrypt = require("bcrypt");
 
 const getUsers = async (req, res) => {
@@ -108,4 +108,42 @@ const followUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, getAllUsers, followUser };
+const updatedUser = async (req, res) => {
+  const currentUserId = req?.user?._id;
+  if (!currentUserId) {
+    res.status(404).json({ message: "Eksik parametre", success: false });
+  }
+  try {
+    const user = await User.findByIdAndUpdate(currentUserId);
+  } catch (error) {
+    console.log("🚀 ~ updatedUser ~ error:", error);
+    res
+      .status(404)
+      .json({ message: "Serverda bir hata oluştu", success: false });
+  }
+};
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req?.user?._id;
+    if (!userId) {
+      return res
+        .status(404)
+        .json({ message: "Eksik parametre", success: false });
+    }
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      res.status(404).json({ message: "Kullanıcı bulunamadı", success: false });
+    }
+    await User.findByIdAndDelete(userId);
+    return res
+      .status(200)
+      .json({ message: "Kullanıcı silindi", success: true });
+  } catch (error) {
+    console.log("🚀 ~ deleteUser ~ error:", error);
+    return res
+      .status(404)
+      .json({ message: "Serverda bir hata oluştu", success: false });
+  }
+};
+
+module.exports = { getUsers, getAllUsers, followUser, deleteUser, updatedUser };
