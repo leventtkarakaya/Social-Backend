@@ -5,7 +5,7 @@ const limiter = rateLimit({
   standardHeaders: true,
   limit: async (req, res) => {
     if (await req.user) {
-      return 1000;
+      return 100;
     } else {
       return 10;
     }

@@ -37,7 +37,7 @@ const register = async (req, res) => {
       });
     }
     // ? PASSWORD VALIDATION
-    if (password !== passwordConfrim) {
+    if (password === passwordConfrim) {
       return res
         .status(400)
         .json({ message: "Parolalar eşleşmiyor", success: false });

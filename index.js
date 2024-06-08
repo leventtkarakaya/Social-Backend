@@ -7,71 +7,78 @@ const DataBase = require("./Config/DataBase");
 const rateLimit = require("./Utils/RateLimit");
 const path = require("path");
 const multer = require("multer");
-const options = multer({
+
+dotenv.config({ path: "/.env" }); // Environment değişkenleri ayarlanır.
+
+const app = express();
+
+// Multer yapılandırması
+const upload = multer({
   limits: {
-    fieldSize: 1024 * 1024 * 20,
+    fieldSize: 1024 * 1024 * 20, // 20MB dosya boyutu sınırı
   },
-  fileFilter: (req, res, cb) => {
-    return cb(null, true);
+  fileFilter: (req, file, cb) => {
+    // Dosya filtresi (isteğe bağlı)
+    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+      cb(null, true);
+    } else {
+      cb(new Error("Lütfen JPEG veya PNG formatında bir dosya yükleyin."));
+    }
   },
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, "uploads/");
     },
     filename: (req, file, cb) => {
-      cb(null, file.originalname);
+      cb(null, file.originalname); // Dosya ismini korur.
     },
   }),
 });
 
-dotenv.config(path.join(__dirname, "../.env"));
-
-const app = express();
-// Middlewares
+// Middleware'ler
 app.use(cors());
-app.use(express.json({ extends: true, limit: "30mb" }));
+app.use(express.json({ extended: true, limit: "30mb" }));
 app.use(express.urlencoded({ extended: true, limit: "30mb" }));
 app.use(rateLimit);
 app.use(helmet());
-app.use(
-  helmet.crossOriginResourcePolicy({
-    policy: "cross-origin",
-  })
-);
-app.use(morgan("common"));
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
+app.use(morgan("common")); // Günlükleri kaydetmek için morgan kullanılır.
 
-app.post("/upload", options.single("avatar"), (req, res, next) => {
-  let imageFile = req.file;
+// Dosya Yükleme
+app.post("/register/image-upload", upload.single("image"), (req, res, next) => {
+  const imageFile = req.file;
   if (imageFile) {
     res.status(200).json({
       success: true,
       message: "Dosya başarıyla yüklenendi",
-      file: imageFile,
+      file: imageFile, // Dosya bilgileri gönderilir.
     });
   } else {
     res.status(400).json({
       success: false,
-      message: "Dosya yüklenirke hata oluştu",
+      message:
+        "Dosya yüklenirken hata oluştu. Lütfen geçerli bir dosya seçtiğinizden emin olun.",
     });
   }
-  next();
 });
 
-app.get("/uploads/:image", (req, res) => {
-  let params = req.params.file;
-  res.sendFile(path.join(__dirname + "/uploads/" + params));
+// Dosya Gösterimi
+app.get("/register/upload/:image", (req, res) => {
+  const params = req.params.image; // 'image' parametresi kullanılır.
+  res.sendFile(path.join(__dirname, "uploads", params));
 });
 
-// Routes
+// Rotalar
 const AuthRouter = require("./Router/AuthRouter");
 const UserRouter = require("./Router/UserRouter");
 
 app.use("/api/auth", AuthRouter);
 app.use("/api/user", UserRouter);
 
-// DataBase Connection
+// Veritabanı Bağlantısı
 DataBase();
-// Server Setup
+
+// Sunucu Başlatma
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
