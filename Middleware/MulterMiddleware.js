@@ -1,6 +1,7 @@
 const expres = require("express");
+
 const multer = require("multer");
-const path = require("path");
+
 const options = multer({
   limits: {
     fieldSize: 1024 * 1024 * 20,
@@ -25,13 +26,10 @@ const options = multer({
     },
   }),
 });
+
 const app = expres();
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname + "/Views/index.html"));
-});
-
-app.post("upload", options.single("image"), (req, res, next) => {
+app.post("/register", options.single("avatar"), (req, res, next) => {
   let imageFile = req.file;
   if (imageFile) {
     res.status(200).json({

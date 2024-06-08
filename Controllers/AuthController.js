@@ -71,9 +71,9 @@ const register = async (req, res) => {
     req.body.otp = otp;
 
     const newUser = await User({
+      userName,
       firstName,
       lastName,
-      userName,
       email,
       password: hashedPassword,
       passwordConfrim: hashedPassword,
