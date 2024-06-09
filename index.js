@@ -63,7 +63,7 @@ app.post("/register/image-upload", upload.single("image"), (req, res, next) => {
 });
 
 // Dosya Gösterimi
-app.get("/register/upload/:image", (req, res) => {
+app.get("/upload/:image", (req, res) => {
   const params = req.params.image; // 'image' parametresi kullanılır.
   res.sendFile(path.join(__dirname, "uploads", params));
 });

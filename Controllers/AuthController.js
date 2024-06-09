@@ -129,38 +129,44 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, userName, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
+
     if (!user) {
       return res
         .status(404)
         .json({ message: "Kullanıcı e-mail bulunamadı", success: false });
     }
-    const isMach = await bcrypt.compare(password, user.password);
-    if (!isMach) {
+
+    if (user.userName !== userName) {
       return res
-        .status(400)
-        .json({ message: "Parolanızı yanlıs girdiniz", success: false });
+        .status(404)
+        .json({ message: "Kullanıcı adı bulunamadı", success: false });
     }
 
-    const isUser = await User.findOne({ email });
+    const isMatch = bcrypt.compare(password, user.password);
 
-    const token = jwt.sign({ id: isUser._id }, process.env.JWT_SECRET, {
-      expiresIn: 86400,
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ message: "Parolanızı yanlış girdiniz", success: false });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
     });
 
     res.status(200).json({
       message: "Giriş yapıldı",
       success: true,
       token,
-      data: isUser,
+      data: user,
     });
   } catch (error) {
-    console.log("🚀 ~ login ~ error:", error);
+    console.error("🚀 ~ login ~ error:", error);
     res.status(500).json({ message: error.message, success: false });
   }
 };
-
 module.exports = {
   register,
   login,

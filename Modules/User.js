@@ -66,8 +66,6 @@ const UserSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default:
-        "https://cdn-icons-png.freepik.com/512/3828/3828065.png?ga=GA1.1.1316012144.1716721314",
     },
     location: {
       type: String,
